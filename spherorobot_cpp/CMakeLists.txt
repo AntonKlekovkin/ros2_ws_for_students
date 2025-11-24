@@ -57,7 +57,7 @@ endif()
 
 ament_package()
 
-install(DIRECTORY launch urdf config meshes src plugins worlds DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY launch urdf config meshes src plugins DESTINATION share/${PROJECT_NAME})
 
 add_executable(platform_control src/platform_control.cpp)
 ament_target_dependencies(platform_control rclcpp geometry_msgs)
