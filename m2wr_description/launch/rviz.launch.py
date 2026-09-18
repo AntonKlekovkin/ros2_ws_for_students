@@ -10,7 +10,7 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     urdf_path = PathJoinSubstitution(
-        [FindPackageShare("m2wr_description"), "urdf", "robot.urdf.xacro"]
+        [FindPackageShare("m2wr_description"), "urdf", "m2wr.urdf.xacro"]
     )
 
     rviz_config_path = PathJoinSubstitution(

@@ -169,7 +169,7 @@ void PublishTheoreticalVelocities(int length, float * arr, float coeff, rclcpp::
         message.y = arr[i]*coeff;
         
         pub->publish(message);
-        Sleep_ms(20);        
+        Sleep_ms(10);        
     }
 }
 
@@ -211,7 +211,7 @@ void StopRobot()
 
 void SetupPublishers(rclcpp::Node::SharedPtr node)
 {
-    pub = node->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 100);
+    pub = node->create_publisher<geometry_msgs::msg::Twist>("m2wr/cmd_vel", 100);
     pubTheorTrajectory = node->create_publisher<geometry_msgs::msg::Vector3>("theor_trajectory", 1000);
     pubTheorLinVel = node->create_publisher<geometry_msgs::msg::Vector3>("theor_lin_vel", 1000);
     pubTheorAngVel = node->create_publisher<geometry_msgs::msg::Vector3>("theor_ang_vel", 1000);
@@ -235,13 +235,13 @@ int main(int argc, char* argv[])
     float v[numberPoints-1];
     float w[numberPoints-1];
 
-    float dt = 0.05;
+    float dt = 0.1;
 
     // init ROS
     rclcpp::init(argc, argv);
     node = rclcpp::Node::make_shared("tr_without_fb_node");
     // init of subscriber to get real velocities while motion
-    auto subOdom = node->create_subscription<nav_msgs::msg::Odometry>("odom", 1, msgCallbackOdom);
+    auto subOdom = node->create_subscription<nav_msgs::msg::Odometry>("m2wr/odom", 1, msgCallbackOdom);
     rclcpp::spin_some(node);
 
     // init sigint event, this event occurs when node exit (CTRL+C)
@@ -264,7 +264,7 @@ int main(int argc, char* argv[])
 
     // calculate coefficient of scale velocities
     float k1,k2,k;
-    float coeffSafety = 1;
+    float coeffSafety = 0.8;
     k1 = maxLinVelocityReal/maxLinVelocity * coeffSafety;
     k2 = maxAngVelocityReal/maxAngVelocity * coeffSafety;
     k = GetMin(2, new float[2] {k1, k2});

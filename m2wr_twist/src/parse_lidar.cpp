@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
     node = rclcpp::Node::make_shared("m2wr_lidar");
-    auto subscriber = node->create_subscription<sensor_msgs::msg::LaserScan>("scan", 10, LidarCallback);
+    auto subscriber = node->create_subscription<sensor_msgs::msg::LaserScan>("m2wr/scan", 10, LidarCallback);
         
     rclcpp::spin(node);    
     rclcpp::shutdown();

@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
     node = rclcpp::Node::make_shared("m2wr_twist");
-    publisher = node->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
+    publisher = node->create_publisher<geometry_msgs::msg::Twist>("m2wr/cmd_vel", 10);
     
     vel.angular.z = 1.0f;
 
