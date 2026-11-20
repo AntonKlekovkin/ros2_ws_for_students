@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sdf version="1.9">
+  <model name="spherorobot_rotor_v1">
+    
+    <!-- Базовое звено (фиксированное) -->
+    <link name="base_link">
+      <pose>0 0 0 0 0 0</pose>
+      <inertial>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>1e-6</ixx>
+          <iyy>1e-6</iyy>
+          <izz>1e-6</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+    </link>
+
+    <!-- Сферическая оболочка робота -->
+    <link name="sphere_link">
+      <pose>0 0 0 0 0 0</pose>
+      <inertial>
+        <mass>0.072</mass>
+        <inertia>
+          <ixx>0.00017</ixx>
+          <iyy>0.0002592</iyy>
+          <izz>0.00017</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <visual name="sphere_visual">
+        <geometry>
+          <mesh>
+            <uri>file://home/avk/ros2_ws/src/sphero_ros2/sphero_base/meshes/base_sphere_link.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.75 0.75 0.75 1</ambient>
+          <diffuse>0.75 0.75 0.75 1</diffuse>
+          <specular>0.1 0.1 0.1 1</specular>
+        </material>
+      </visual>
+      <collision name="sphere_collision">
+        <geometry>
+          <sphere>
+            <radius>0.06</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.0</mu>
+              <mu2>0.0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+    </link>
+
+    <!-- Фиксированное соединение base_link со sphere_link -->
+    <joint name="base_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>sphere_link</child>
+      <pose>0 0 0 0 0 0</pose>
+    </joint>
+
+    <!-- Звено маятника (неограниченное вращение) -->
+    <link name="pendulum_link">
+      <pose>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 -0.024 0 0 0</pose>
+        <mass>0.163</mass>
+        <inertia>
+          <ixx>0.00021</ixx>
+          <iyy>0.0000792</iyy>
+          <izz>0.00016</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <visual name="pendulum_visual">
+        <geometry>
+          <mesh>
+            <uri>package://home/avk/ros2_ws/src/sphero_ros2/sphero_base/meshes/pendulum_link.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>1 0 0 1</ambient>
+          <diffuse>1 0 0 1</diffuse>
+          <specular>0.1 0.1 0.1 1</specular>
+        </material>
+      </visual>
+      <collision name="pendulum_collision">
+        <pose>0 0 -0.015 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.03 0.03 0.03</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Вращательное соединение маятника (без ограничений) -->
+    <joint name="pendulum_joint" type="revolute">
+      <parent>sphere_link</parent>
+      <child>pendulum_link</child>
+      <pose>0 0 0 0 0 0</pose>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1000000</lower>
+          <upper>1000000</upper>
+          <effort>0.5</effort>
+          <velocity>2</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.0</damping>
+          <friction>0.0</friction>
+        </dynamics>
+      </axis>
+    </joint>
+
+    
+
+    <!-- Звено ротора -->
+    <link name="rotor_link">
+      <pose>0 0 0 0 0 0</pose>
+      <inertial>
+        <mass>0.016</mass>
+        <inertia>
+          <ixx>0.0000009</ixx>
+          <iyy>0.0000009</iyy>
+          <izz>0.0000017</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <visual name="rotor_visual">
+        <geometry>
+          <mesh>
+            <uri>package://home/avk/ros2_ws/src/sphero_ros2/sphero_base/meshes/rotor_link.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0 0 1 1</ambient>
+          <diffuse>0 0 1 1</diffuse>
+          <specular>0.1 0.1 0.1 1</specular>
+        </material>
+      </visual>
+      <collision name="rotor_collision">
+        <pose>0 0 -0.0015 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.015</radius>
+            <length>0.003</length>
+          </cylinder>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Вращательное соединение ротора (полный оборот) -->
+    <joint name="rotor_joint" type="revolute">
+      <parent>pendulum_link</parent>
+      <child>rotor_link</child>
+      <pose>0 0 -0.045728 0 0 0</pose>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-1000000</lower>
+          <upper>1000000</upper>
+        </limit>
+      </axis>
+    </joint>
+
+    <!-- Плагин управления роботом -->
+    <plugin name="gz_ros2_sphero_base::SpheroBasePlugin" filename="libsphero_plugin.so">
+      <sphere_contact_friction>0.0</sphere_contact_friction>
+      <init_lin_vel_X>1.0</init_lin_vel_X>
+      <init_lin_vel_Y>0.0</init_lin_vel_Y>
+    </plugin>
+
+    <!-- Плагин управления положением сустава маятника -->
+    <!-- <plugin filename="gz-sim-joint-controller-system" name="gz::sim::systems::JointController">
+      <joint_name>pendulum_joint</joint_name>
+      <p_gain>10.0</p_gain>
+      <i_gain>1.1</i_gain>
+      <d_gain>5.0</d_gain>
+      <initial_velocity>1.0</initial_velocity>
+      <use_force_commands>false</use_force_commands>  
+    </plugin> -->
+
+  </model>
+</sdf>

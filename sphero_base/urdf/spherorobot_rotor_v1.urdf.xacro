@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot name="spherorobot_rotor_v1">
+
+  <gazebo>
+    <allow_auto_disable>false</allow_auto_disable>
+  </gazebo>
+
+  <link name="base_link"> 
+    <!-- <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />       
+      <surface>
+        <friction>
+          <ode>
+            <mu>0.0</mu>
+            <mu2>0.0</mu2>
+          </ode>
+          <torsional>
+            <coefficient>0.0</coefficient>           
+            <use_patch_radius>false</use_patch_radius>
+            <patch_radius>0.0</patch_radius>       
+          </torsional>
+        </friction>
+      </surface>
+    </collision>     -->    
+  </link>
+
+  
+  <link name="sphere_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.072" />
+      <inertia
+        ixx="0.00017"
+        ixy="0"
+        ixz="0"
+        iyy="0.0002592"
+        iyz="0"
+        izz="0.00017" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="$(find sphero_base)/meshes/base_sphere_link.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.75 0.75 0.75 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" /> 
+      <geometry>
+        <!-- <cylinder length="0.22" radius="0.06"/> -->
+        <sphere radius="0.06"/>
+      </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>0.0</mu>
+            <mu2>0.0</mu2>
+          </ode>
+          <torsional>
+            <coefficient>0.0</coefficient>           <!-- Обнуляем коэффициент -->
+            <use_patch_radius>false</use_patch_radius>
+            <patch_radius>0.0</patch_radius>        <!-- Радиус = 0 -->
+          </torsional>
+        </friction>
+      </surface>
+    </collision>
+  </link>
+
+  <joint name="base_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="sphere_link" />    
+  </joint>
+
+  <link name="pendulum_link">
+    <inertial>
+      <origin xyz="0 0 -0.024" rpy="0 0 0" />
+      <mass value="0.163" />
+      <inertia
+        ixx="0.00021"
+        ixy="0"
+        ixz="0"
+        iyy="0.0000792"
+        iyz="0"
+        izz="0.00016" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="$(find sphero_base)/meshes/pendulum_link.STL" />
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.015" rpy="0 0 0" />
+      <geometry>
+        <!-- <mesh filename="$(find sphero_base)/meshes/pendulum_link.STL" /> -->
+        <box size="0.03 0.03 0.03"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="pendulum_joint" type="continuous">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="sphere_link" />
+    <child link="pendulum_link" />
+    <axis xyz="0 1 0" />
+    <!-- <dynamics damping="0.001" friction="0.06"/>  -->
+    <dynamics damping="0.0" friction="0.0"/> 
+  </joint>
+
+  <link name="rotor_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.016" />
+      <inertia
+        ixx="0.0000009"
+        ixy="0"
+        ixz="0"
+        iyy="0.0000009"
+        iyz="0"
+        izz="0.0000017" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="$(find sphero_base)/meshes/rotor_link.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0 0 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.0015" rpy="0 0 0" />
+      <geometry>
+        <!-- <mesh filename="$(find sphero_base)/meshes/rotor_link.STL" /> -->
+        <cylinder length="0.003" radius="0.015"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="rotor_joint" type="continuous">
+    <origin xyz="0 0 -0.045728" rpy="0 0 0" />
+    <parent link="pendulum_link" />
+    <child link="rotor_link" />
+    <axis xyz="0 0 -1" />
+    <!-- <dynamics damping="0.1" friction="0.025"/>  -->
+    <!-- <axis xyz="0 0 -1" /> -->
+  </joint>
+
+  <gazebo>
+    <plugin name="gz_ros2_sphero_base::SpheroBasePlugin" filename="libsphero_plugin.so">      
+      <sphere_contact_friction>0.0</sphere_contact_friction> 
+      <apply_initial_condition>false</apply_initial_condition>
+      <init_force_vect>100.0 0.0 0.0</init_force_vect>
+      <init_force_offset>0.0 0.0 -0.01</init_force_offset>
+      <init_pendulum_vel>0.0</init_pendulum_vel>
+      <init_rotor_vel>100.0</init_rotor_vel>
+    </plugin>    
+  </gazebo>  
+
+</robot>
